@@ -2,6 +2,7 @@ package com.psuti.alekseev.controllers;
 
 import com.psuti.alekseev.entity.User;
 import com.psuti.alekseev.repository.UserRepository;
+import com.psuti.alekseev.service.token.UserService;
 import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,39 +13,31 @@ import java.util.UUID;
 @RequestMapping("/users")
 @RestController
 public class UserRestController {
-    private final UserRepository userRepository;
+    private final UserService userService;
     @Autowired
-    public UserRestController(UserRepository userRepository){
-        this.userRepository = userRepository;
+    public UserRestController(UserService userService){
+        this.userService = userService;
     }
     @GetMapping
     public List<User> getAll(){
-        return userRepository.findAll();
+        return userService.getAll();
     }
     @GetMapping("/{id}")
     public User getById(@PathVariable("id") UUID id){
-        return userRepository.findById(id).get();
+        return userService.getById(id);
     }
-    @PutMapping
-    public User update(@RequestBody User user){
-        if(userRepository.existsById(user.getId())){
-            return userRepository.save(user);
-        }
-        throw new EntityExistsException("User with id:'"+ user.getId() +"' doesn't exists");
+    @PutMapping("/{id}")
+    public User update(@RequestBody User user, @PathVariable("id") UUID id){
+        return userService.update(user, id);
     }
     @PostMapping
-    public User create(@RequestBody User user){
-        UUID id = user.getId();
-        if(id !=null){
-            if(userRepository.existsById(user.getId())){
-                throw new EntityExistsException("User already exists");
-            }
-        }
-        return userRepository.save(user);
+    public User create(User user){
+        return userService.create(user);
     }
     @DeleteMapping("/{id}")
     public void remove(@PathVariable("id") UUID id){
-        userRepository.deleteById(id);
+        userService.removeById(id);
     }
 }
+
 

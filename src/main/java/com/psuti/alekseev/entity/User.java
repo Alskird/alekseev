@@ -1,5 +1,7 @@
 package com.psuti.alekseev.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,8 +21,16 @@ public class User implements Serializable {
     private String firstname;
     @Column(nullable = false, length = 25, name = "last_name")
     private String lastname;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @ManyToOne
     @JoinColumn(name = "role")
     private Role role;
+    @Column(nullable = false, unique = true)
+    private String email;
+    @Column(nullable = false)
+    private String password;
+    @JsonIgnore
+    private boolean enabled = true;
 }
+
 
